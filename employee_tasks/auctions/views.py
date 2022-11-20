@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Category, Listing, Comment
+from .models import User, Category, Listing, Comment, Employee, EmployeeListing, Section
 
 import datetime
 
@@ -16,6 +16,15 @@ def index(request):
     return render(request, "auctions/index.html", {
         "activeListings": activeListings,
         "categories": categories,
+    })
+
+
+def employees(request):
+    activeEmployees = Employee.objects.filter(isActive=True)
+    sections = Section.objects.all()
+    return render(request, "employees" {
+        "activeEmployees": activeEmployees,
+        "sections": sections
     })
 
 
