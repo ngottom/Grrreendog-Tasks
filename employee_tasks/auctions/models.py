@@ -47,8 +47,8 @@ class Listing(models.Model):
 class EmployeeListing(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,blank=True,null=True,related_name="employee")
     section = models.ForeignKey(Section, on_delete = models.CASCADE, blank = True, null = True)
-    tasks = models.CharField(1000)
-    extras = models.CharField(1000)
+    tasks = models.CharField(max_length=1000)
+    extras = models.CharField(max_length=1000, default="None")
     extrasPrice = models.FloatField(default=0)
     
     #default date is today
