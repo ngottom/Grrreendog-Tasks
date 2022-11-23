@@ -22,9 +22,9 @@ def index(request):
 def employees(request):
     activeEmployees = Employee.objects.filter(isActive=True)
     sections = Section.objects.all()
-    return render(request, "employees" {
+    return render(request, "auctions/employees.html", {
         "activeEmployees": activeEmployees,
-        "sections": sections
+        "sections": sections,
     })
 
 
@@ -170,6 +170,13 @@ def listing(request, id):
         "listingData": listingData,
         "isListingInWatchlist": isListingInWatchlist,
         "comments": comments
+    })
+
+
+def employeePage(request, phone):
+    employeeData = Employee.objects.get(phone=phone)
+    return render(request, "auctions/employeePage.html", {
+        "employeeData": employeeData,
     })
 
 

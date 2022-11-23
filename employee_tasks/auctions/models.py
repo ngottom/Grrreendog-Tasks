@@ -18,10 +18,12 @@ class Section(models.Model):
 
 class Employee(models.Model):
     employeeName = models.CharField(max_length=200)
-    phone = models.FloatField()
+    phone = models.IntegerField()
     section = models.ForeignKey(
         Section, on_delete=models.CASCADE, blank=True, null=True, related_name="section")
     isActive = models.BooleanField(default=True)
+    imageURL = models.CharField(
+        max_length=500, default="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Question_mark_%28black%29.svg/800px-Question_mark_%28black%29.svg.png")
 
     def __str__(self):
         return self.employeeName
