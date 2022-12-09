@@ -27,12 +27,36 @@
 <h6>{{employeeData.section}}</h6>
 </p>
 
+<hr></hr>
+
+<h1 style="color:red">Weekly Tasks</h1>
+{% for task in employeeTasks %}
+<div class="card border-light mb-3 text-center">
+    
+
+    <div class="card-body">
+                
+              <p class="card-text"><h1 style="color:rgb(0, 200, 255)">{{task.section}}<br>{{task.tasks}}<br></h1> 
+                <h3>Month: {{task.startMonth}} Day: {{task.startDay}}, Year: {{task.startYear}}, <br>
+        {{task.startHour}}: {{task.startMinute}} - {{task.endHour}}: {{task.endMinute}} P.M.</h3><br>
+                <p>{{task.tasks}}</p>
+
+            </div>  
+            <h4>{{task.extras}}</h4>
+            <h6>${{task.extrasPrice}}</h6>
+        
+{% endfor %}    
+           <br>
+</div>
+    
+
+<hr></hr>
     <h2>Comments</h2>
     {% if user.is_authenticated %}
     
-    <form action = "{% url 'addComment' id=employeeData.phone %}" method="POST">
+    <form action = "{% url 'addEmployeeComment' phone=employeeData.phone %}" method="POST">
         {% csrf_token %}
-        <input type="text" name="newComment" placeholder="Add new comment">
+        <input type="textarea" name="newComment" placeholder="Add new comment">
         <button type="submit" class="btn btn-warning">Submit</button>     
     </form>
     {% endif %}

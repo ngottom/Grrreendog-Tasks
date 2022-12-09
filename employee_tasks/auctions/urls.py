@@ -19,6 +19,12 @@ urlpatterns = [
     path("addComment/<int:id>", views.addComment, name="addComment"),
     path("employees", views.employees, name="employees"),
     path("employeePage/<int:phone>", views.employeePage, name="employeePage"),
+    path("createTask/", views.createTask, name="createTasks"),
+    path("displaySection", views.displaySection, name="displaySection"),
+    path("createTask", views.createTask, name="createTask"),
+    path("addEmployeeComment/<int:phone>", views.addEmployeeComment, name="addEmployeeComment"),
+    
+
 
 
 

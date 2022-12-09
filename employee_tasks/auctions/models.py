@@ -12,6 +12,7 @@ class User(AbstractUser):
 class Section(models.Model):
     sectionName = models.CharField(max_length=200)
 
+
     def __str__(self):
         return self.sectionName
 
@@ -26,7 +27,7 @@ class Employee(models.Model):
         max_length=500, default="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Question_mark_%28black%29.svg/800px-Question_mark_%28black%29.svg.png")
 
     def __str__(self):
-        return self.employeeName
+        return str(self.employeeName)
 
 
 class Category(models.Model):
@@ -72,18 +73,18 @@ class EmployeeListing(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(59)])
 
     # endTime
-    endMonth = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(12)])
-    endDay = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(31)])
+    # endMonth = models.PositiveIntegerField(
+    #     validators=[MinValueValidator(1), MaxValueValidator(12)])
+    # endDay = models.PositiveIntegerField(
+    #     validators=[MinValueValidator(1), MaxValueValidator(31)])
     endHour = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(23)])
     endMinute = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(59)])
 
     #
-    dateStart = datetime.now()
-    dateEnd = datetime.now()
+    # dateStart = datetime.now()
+    # dateEnd = datetime.now()
     # create this in views later
     # dateStart = datetime(startYear, startMonth, startDay,startHour, startMinute)
     # dateEnd = datetime(endYear, endMonth, endDay, endDay, endHour, endMinute)
@@ -94,7 +95,7 @@ class EmployeeListing(models.Model):
     #
 
     def __str__(self):
-        return f"{self.employee.employeeName}: {dateStart}"
+        return f"{self.employee.employeeName}: {self.employee.employeeName}: {self.startMonth} {self.startDay} {self.startYear}"
 
 
 class Comment(models.Model):
@@ -108,6 +109,18 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.author} about {self.listing}: {self.message}"
+
+class employeeComment(models.Model):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE,  blank=True, null=True, related_name="commentUser")
+    employee = models.ForeignKey(
+        Employee, on_delete=models.CASCADE,  blank=True, null=True, related_name="commentEmployee")
+    message = models.CharField(max_length=1000)
+    datetime = models.CharField(
+        max_length=100, default=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
+    def __str__(self):
+        return f"{self.author}: {self.message}"
 
 
 # class Purchase(models.Model):

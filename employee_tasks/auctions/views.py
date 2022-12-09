@@ -5,17 +5,19 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Category, Listing, Comment, Employee, EmployeeListing, Section
+from .models import User, Category, Listing, Comment, Employee, EmployeeListing, Section, employeeComment
 
 import datetime
 
 
+
+
 def index(request):
-    activeListings = Listing.objects.filter(isActive=True)
-    categories = Category.objects.all()
-    return render(request, "auctions/index.html", {
-        "activeListings": activeListings,
-        "categories": categories,
+    activeEmployees = Employee.objects.filter(isActive=True)
+    sections = Section.objects.all()
+    return render(request, "auctions/employees.html", {
+        "activeEmployees": activeEmployees,
+        "sections": sections,
     })
 
 
@@ -89,16 +91,11 @@ def createListing(request):
     else:
         # Get data from form
         title = request.POST["title"]
-        print(title)
         description = request.POST["description"]
-        print(description)
 
         imageURL = request.POST["imageURL"]
-        print(imageURL)
         price = request.POST["price"]
-        print(price)
         category = request.POST["category"]
-        print(category)
         # who is the user
         currentUser = request.user
         # Get all content about particular category
@@ -112,9 +109,65 @@ def createListing(request):
             category=categoryData,
             owner=currentUser
         )
+def createTask(request):
+    
+    #Load Employees, Sections
+    if request.method == "GET":
+        
+        #get current Year
+        today = datetime.datetime.now()
+        currentYear = today.year
+        nextYear = currentYear+1
+        currentMonth = today.month
+        if currentMonth == 12:
+            nextMonth = 1
+        else:
+            nextMonth = currentMonth + 1
+        print(nextMonth)
+        #import Employee and Section objects
+        allEmployees = Employee.objects.all()
+        allSections = Section.objects.all()
+        return render(request,"auctions/createTask.html",{
+            "allEmployees": allEmployees,
+            "allSections": allSections,
+            "currentYear": currentYear,
+            "nextYear": nextYear,
+            "currentMonth": currentMonth,
+            "nextMonth": nextMonth,
+            "rangeDays": range(1,32),
+            "rangeHours": range(1,13),
+            "rangeMinutes": range(0,31,30),
+        })
+    else:
+        employeeName = request.POST["employeeName"]
+        section = request.POST["section"]
+        tasks = request.POST["tasks"]
+        startYear = request.POST["startYear"]
+        startHour = request.POST["startHour"]
+        startMonth = request.POST["startMonth"]
+        startDay = request.POST["startDay"]
+        startMinute = request.POST["startMinute"]
+        endHour = request.POST["endHour"]
+        endMinute = request.POST["endMinute"]
+        extras = request.POST["extras"]
+        extrasPrice = request.POST["extrasPrice"]
 
+        newEmployeeListing = EmployeeListing(
+            employee = Employee.objects.get(phone=employeeName),
+            section=Section.objects.get(sectionName=section),
+            tasks = tasks,
+            startYear = startYear,
+            startMonth = startMonth,
+            startDay = startDay,
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour, 
+            endMinute = endMinute,
+            extras = extras,
+            extrasPrice = extrasPrice
+        )
+        newEmployeeListing.save()
         # Insert object into database
-        newListing.save()
         # print(newListing)
         # print(f"my listing{newListing.title}")
         # print(f"my listing{newListing.description}")
@@ -126,7 +179,6 @@ def createListing(request):
 
 def activeListings(request):
     activeListings = Listing.objects.all()
-    print(activeListings)
     categories = Category.objects.all()
 
     return render(request, "auctions/active.html", {
@@ -150,12 +202,25 @@ def displayCategory(request):
             isActive=True, category=category)
         allCategories = Category.objects.all()
         allListings = Listing.objects.all()
-        print(category)
-        print(activeListings)
+        # print(category)
+        # print(activeListings)
         return render(request, "auctions/index.html", {
             "activeListings": activeListings,
             "categories": allCategories,
             "allListings": allListings,
+        })
+def displaySection(request):
+    if request.method == "POST":
+        sectionFromForm = request.POST['section']
+        section = Section.objects.get(sectionName=sectionFromForm)
+        activeEmployees = Employee.objects.filter(isActive=True, section=section)
+        allSections = Section.objects.all()
+        allEmployees = Employee.objects.all()
+        
+        return render(request, "auctions/employees.html", {
+            "activeEmployees": activeEmployees,
+            "sections": allSections,
+            "allEmployees": allEmployees,
         })
 
 
@@ -174,9 +239,20 @@ def listing(request, id):
 
 
 def employeePage(request, phone):
+    employee = Employee.objects.get(phone=phone)
     employeeData = Employee.objects.get(phone=phone)
+    employeeTasks = EmployeeListing.objects.filter(employee=employee)
+    print(f"employee Tasks reverse {employeeTasks}")
+    reverseEmployeeTasks = reversed(employeeTasks)
+    # sortedEmployeeTasks = employeeTasks.sort(key=lambda y : y.startYear)
+    # print(sortedEmployeeTasks)
+    print(employeeTasks)
+    comments = employeeComment.objects.filter(employee=employee)
+
     return render(request, "auctions/employeePage.html", {
         "employeeData": employeeData,
+         "employeeTasks": employeeTasks,
+         "comments": comments,
     })
 
 
@@ -235,6 +311,19 @@ def addComment(request, id):
     createComment.save()
 
     return HttpResponseRedirect(reverse("listing", args=(id, )))
+
+def addEmployeeComment(request, phone):
+    currentUser = request.user
+    employee = Employee.objects.get(phone=phone)
+    message = request.POST['newComment']
+    createComment = employeeComment(
+        author = currentUser,
+        employee = employee,
+        message = message
+    )
+    createComment.save()
+
+    return HttpResponseRedirect(reverse("employeePage", args=(phone, )))
 
 
 # def purchases(request):

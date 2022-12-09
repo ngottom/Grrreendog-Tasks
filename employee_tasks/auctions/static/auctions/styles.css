@@ -11,6 +11,8 @@ img.card-img-top {
 
 .card{
     margin:1.5vh;
+    /* border:2px !important; not working
+    border-color:black !important; */
 }
 
 img.listPage{
@@ -29,4 +31,11 @@ h3.description{
 
 #nav-bar{
     
+}
+
+.center{
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    width:50%;
 }
